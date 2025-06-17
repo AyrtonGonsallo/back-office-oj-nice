@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+ <div class="row">
+     <div class="col-2">
+     </div>
+     <div class="col-sm-8 col-12">
+        <h1>Gestion des utilisateurs</h1>
+        {% from 'bootstrap5/table.html' import render_table %}
+
+        <form method="get" class="mb-3 d-flex">
+            <input type="text" name="search" value="{{ search }}" class="form-control me-2" placeholder="Rechercher...">
+            <button class="btn btn-primary">Rechercher</button>
+        </form>
+
+          <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    {% for col in ['id', 'nom', 'prenom', 'email','role'] %}
+                        <th>
+                            <a href="?search={{ search }}&sort={{ col }}&direction={{ 'asc' if direction == 'desc' else 'desc' }}">
+                                {{ col|capitalize }}
+                            </a>
+                        </th>
+                    {% endfor %}
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in utilisateurs %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nom }}</td>
+                        <td>{{ u.prenom }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.Role.titre }}</td>
+                        <td>
+                            <a href="{{ url_for('modifier_utilisateur', user_id=u.id) }}" class="btn btn-link">Modifier</a><br>
+                            <a href="{{ url_for('supprimer_utilisateur', user_id=u.id) }}" class="btn btn-link">Supprimer</a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+            <nav>
+              <ul class="pagination">
+                {% for p in range(1, pagination.pages + 1) %}
+                  <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ p }}&search={{ search }}&sort={{ sort }}&direction={{ direction }}">{{ p }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </nav>
+         <a href="{{ url_for('ajouter_utilisateur') }}" class="btn btn-primary">Ajouter un utilisateur</a>
+
+        </div>
+     <div class="col-2">
+     </div>
+</div>
+
+{% endblock %}
