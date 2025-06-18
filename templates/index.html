@@ -46,15 +46,29 @@
                     <div class="col-sm-4 col-12">
                         <img src="{{ url_for('static', filename='images/logo_white.png') }}" alt="Logo" class="img-fluid" />
 
-                        <h2>Formulaire d'inscription</h2>
+
                         {{ render_form(form) }}
-                        <a href="/">Mot de passe oublié ?</a>
+                        <a href="/" data-bs-toggle="modal" data-bs-target="#exampleModal">Mot de passe oublié ?</a>
                     </div>
                   <div class="col-4">
                   </div>
               </div>
             </div>
         </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Récupération de mot de passe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          {{ render_form(formRecuperation) }}
+      </div>
+
+    </div>
+  </div>
+</div>
 
         {% block scripts %}
             <!-- Optional JavaScript -->

@@ -6,6 +6,8 @@ from flask import Flask, render_template, flash, url_for, redirect, session, req
 from form import MyForm
 from form_add_user import FormAddUser
 from form_edit_user import FormEditUser
+from form_recuperation import FormRecuperation
+
 app = Flask(__name__)
 app.secret_key = 'super-secret-key'  # Requis pour les formulaires CSRF
 bootstrap = Bootstrap5(app)
@@ -13,8 +15,11 @@ API_BASE_URL = os.getenv('API_BASE_URL')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    form_type = request.form.get('form_name')
     form = MyForm()
-    if form.validate_on_submit():
+    formRecuperation = FormRecuperation()
+
+    if form_type == 'connexion' and form.validate_on_submit():
         # traitement ici
         identifiant = form.identifiant.data
         mot_de_passe = form.mot_de_passe.data
@@ -40,7 +45,26 @@ def login():
 
         except requests.exceptions.RequestException as e:
             flash(f"Erreur de connexion : {str(e)}", 'danger')
-    return render_template('index.html', form=form)
+    if form_type == 'recuperation' and formRecuperation.validate_on_submit():
+        # traitement ici
+        identifiant2 = formRecuperation.identifiant2.data
+        try:
+            response = requests.post(
+                f'{API_BASE_URL}/api/auth/recuperer_utilisateur',
+                headers={'Content-Type': 'application/json'},
+                json={
+                    'email': identifiant2
+                }
+            )
+            if response.status_code == 200:
+                flash(f"Récupération réussie. Consultez votre adresse {identifiant2}","success")
+                return redirect(url_for('login'))
+            else:
+                flash('Connexion échouée : identifiants invalides ou serveur indisponible', 'danger')
+
+        except requests.exceptions.RequestException as e:
+            flash(f"Erreur de connexion : {str(e)}", 'danger')
+    return render_template('index.html', form=form,formRecuperation=formRecuperation)
 
 
 @app.route('/logout')
@@ -147,6 +171,7 @@ def ajouter_utilisateur():
             'password': mot_de_passe,
             'roleId': role_id
         }
+        data=None
 
         try:
             response = requests.post(
@@ -154,13 +179,13 @@ def ajouter_utilisateur():
                 json=payload,
                 timeout=5  # optionnel, éviter attente infinie
             )
-            response.raise_for_status()  # Lève une erreur si code >=400
-
             data = response.json()
-            flash('Utilisateur créé avec succès !', 'success')
+            response.raise_for_status()  # Lève une erreur si code >=400
+            flash(f'Le compte de {prenom} {nom} a été bien été créé et un message avec les identifiants et le lien de téléchargement de l\'application a été envoyé à l\'adresse {email}.', 'success')
             return redirect(url_for('liste_des_comptes'))
         except requests.RequestException as e:
-            flash(f'Erreur lors de la création de l’utilisateur : {e}', 'danger')
+            print(data)
+            flash(f'Erreur lors de la création de l’utilisateur : {data["message"]}', 'danger')
     return render_template('ajouter_utilisateur.html',user=user,form=form)
 
 @app.route('/modifier_utilisateur/<int:user_id>', methods=['GET', 'POST'])

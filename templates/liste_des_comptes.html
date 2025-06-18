@@ -7,7 +7,18 @@
      <div class="col-2">
      </div>
      <div class="col-sm-8 col-12">
-        <h1>Gestion des utilisateurs</h1>
+         <div style="border-bottom: black 3px solid; margin-bottom: 50px;">
+              <div style="display:flex;justify-content: space-between;">
+                <div class="text-left">
+                  <h1>Gestion des utilisateurs</h1>
+                </div>
+                <div style="align-items: center;display: flex;justify-content: center;">
+                  <a href="{{ url_for('ajouter_utilisateur') }}" class="btn btn-dark">Ajouter un utilisateur</a>
+                </div>
+              </div>
+
+         </div>
+
         {% from 'bootstrap5/table.html' import render_table %}
 
         <form method="get" class="mb-3 d-flex">
@@ -37,7 +48,7 @@
                         <td>{{ u.email }}</td>
                         <td>{{ u.Role.titre }}</td>
                         <td>
-                            <a href="{{ url_for('modifier_utilisateur', user_id=u.id) }}" class="btn btn-link">Modifier</a><br>
+                            <a href="{{ url_for('modifier_utilisateur', user_id=u.id) }}" class="btn btn-link">Modifier</a>
                             <a href="{{ url_for('supprimer_utilisateur', user_id=u.id) }}" class="btn btn-link">Supprimer</a>
                         </td>
 
@@ -55,7 +66,7 @@
                 {% endfor %}
               </ul>
             </nav>
-         <a href="{{ url_for('ajouter_utilisateur') }}" class="btn btn-primary">Ajouter un utilisateur</a>
+
 
         </div>
      <div class="col-2">
