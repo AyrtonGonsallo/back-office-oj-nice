@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier un cours{% endblock %}
+
+{% block content %}
+ <div class="row">
+     <div class="col-2">
+     </div>
+     <div class="col-sm-8 col-12">
+        <h1>Modifier un cours</h1>
+         {% from 'bootstrap5/form.html' import render_form %}
+        <form method="POST" action="">
+  {{ form.hidden_tag() }}
+ <div class="mb-3">
+    {{ form.heure.label(class="form-label") }}
+    {{ form.heure(class="form-control") }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.jour.label(class="form-label") }}
+    {{ form.jour(class="form-select") }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.dojoId.label(class="form-label") }}
+    {{ form.dojoId(class="form-select") }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.profsId.label }}</label>
+    <div class="form-check">
+      {% for value, label in form.profsId.choices %}
+        <div class="form-check">
+          <input class="form-check-input"
+                 type="checkbox"
+                 id="profsId_{{ loop.index }}"
+                 name="{{ form.profsId.name }}"
+                 value="{{ value }}"
+                 {% if value|int in form.profsId.data %}checked{% endif %}>
+          <label class="form-check-label" for="profsId_{{ loop.index }}">{{ label }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ form.categorie_age.label }}</label>
+    <div class="form-check">
+      {% for value, label in form.categorie_age.choices %}
+        <div class="form-check">
+          <input class="form-check-input"
+                 type="checkbox"
+                 id="categorie_age_{{ loop.index }}"
+                 name="{{ form.categorie_age.name }}"
+                 value="{{ value }}"
+                 {% if value in form.categorie_age.data %}checked{% endif %}>
+          <label class="form-check-label" for="categorie_age_{{ loop.index }}">{{ label }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mt-4">
+    {{ form.submit(class="btn btn-primary") }}
+  </div>
+</form>
+        </div>
+     <div class="col-2">
+     </div>
+</div>
+
+{% endblock %}
