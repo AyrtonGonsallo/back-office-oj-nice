@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/back-office-judo-nice.iml" filepath="$PROJECT_DIR$/.idea/back-office-judo-nice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/BackOfficeJudoNice.iml" filepath="$PROJECT_DIR$/.idea/BackOfficeJudoNice.iml" />
     </modules>
   </component>
 </project>

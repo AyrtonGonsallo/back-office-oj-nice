@@ -84,6 +84,17 @@ def ajouter_utilisateur():
         # Remplir les choices dynamiquement
     form.role.choices = [(str(role['id']), role['titre']) for role in roles]
 
+    try:
+        response = requests.get(f'{API_BASE_URL}/api/dojo_cours/get_dojos')
+        response.raise_for_status()
+        dojos = response.json()  # liste d'objets {id:..., nom:...}
+    except requests.RequestException:
+        dojos = []
+
+        # Remplir les choices dynamiquement
+    form.dojoId.choices = [(int(dojo['id']), dojo['nom']) for dojo in dojos]
+
+
     if form.validate_on_submit():
         # Traiter les données du formulaire ici
         nom = form.nom.data
@@ -91,13 +102,16 @@ def ajouter_utilisateur():
         email = form.email.data
         mot_de_passe = form.mot_de_passe.data
         role_id = form.role.data
+        dojoId = form.dojoId.data
+
         # envoyer post a http://localhost:3000/api/auth/add_user
         payload = {
             'nom': nom,
             'prenom': prenom,
             'email': email,
             'password': mot_de_passe,
-            'roleId': role_id
+            'roleId': role_id,
+            'dojoId': dojoId,
         }
         data=None
 
@@ -134,6 +148,16 @@ def modifier_utilisateur(user_id):
 
     form2.role.choices = [(str(role['id']), role['titre']) for role in roles]
 
+    try:
+        response = requests.get(f'{API_BASE_URL}/api/dojo_cours/get_dojos')
+        response.raise_for_status()
+        dojos = response.json()  # liste d'objets {id:..., nom:...}
+    except requests.RequestException:
+        dojos = []
+
+        # Remplir les choices dynamiquement
+    form2.dojoId.choices = [(int(dojo['id']), dojo['nom']) for dojo in dojos]
+
     # Récupération de l'utilisateur à modifier
     try:
         response = requests.get(f'{API_BASE_URL}/api/auth/get_user/{user_id}')
@@ -152,7 +176,8 @@ def modifier_utilisateur(user_id):
             'nom': utilisateur.get('nom', ''),
             'prenom': utilisateur.get('prenom', ''),
             'email': utilisateur.get('email', ''),
-            'role': utilisateur.get('Role', {}).get('id', None)
+            'role': utilisateur.get('Role', {}).get('id', None),
+            'dojoId': utilisateur.get('Dojo', {}).get('id', None)
         }
         form2.process(data=form_data)
 

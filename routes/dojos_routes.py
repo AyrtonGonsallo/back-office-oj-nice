@@ -151,7 +151,7 @@ def modifier_dojo(dojo_id):
             print(form2.errors)
             flash("Le formulaire contient des erreurs.", "warning")
 
-    return render_template('modifier_utilisateur.html', user=user, form2=form2)
+    return render_template('modifier_dojo.html', user=user, form2=form2)
 
 
 @bp.route('/supprimer_dojo/<int:dojo_id>', methods=['GET'])

@@ -9,7 +9,8 @@ from forms.form_edit_user import FormEditUser
 from forms.form_recuperation import FormRecuperation
 from dotenv import load_dotenv
 
-from routes import auth_routes, gestion_des_comptes_routes, dojos_routes, cours_routes
+from routes import auth_routes, gestion_des_comptes_routes, dojos_routes, cours_routes, appel_routes, \
+    professeurs_routes, adherents_routes
 
 sys.path.insert(0, os.path.dirname(__file__))
 load_dotenv()
@@ -24,10 +25,15 @@ bootstrap = Bootstrap5(app)
 
 
 
+
 app.register_blueprint(auth_routes.bp)
 app.register_blueprint(gestion_des_comptes_routes.bp)
+app.register_blueprint(appel_routes.bp)
+
 app.register_blueprint(dojos_routes.bp)
 app.register_blueprint(cours_routes.bp)
+app.register_blueprint(professeurs_routes.bp)
+app.register_blueprint(adherents_routes.bp)
 
 
 @app.route('/tableau_de_bord', methods=['GET', 'POST'])

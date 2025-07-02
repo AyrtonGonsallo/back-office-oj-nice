@@ -10,10 +10,10 @@
          <div style="border-bottom: black 3px solid; margin-bottom: 50px;">
               <div style="display:flex;justify-content: space-between;">
                 <div class="text-left">
-                  <h1>Gestion des adhérents</h1>
+                  <h1>{{cours.Dojo.nom}} {{cours.jour}} {{cours.heure[:5]}} </h1>
                 </div>
                 <div style="align-items: center;display: flex;justify-content: center;">
-                  <a href="{{ url_for('adherents.ajouter_adherent') }}" class="btn btn-dark">Ajouter un adhérent</a>
+                  <a href="{{ url_for('adherents.ajouter_adherent') }}" class="d-none btn btn-dark">Ajouter un adhérent</a>
                 </div>
               </div>
 
@@ -21,18 +21,18 @@
 
         {% from 'bootstrap5/table.html' import render_table %}
 
+         <h3>Liste des adhérents</h3>
+
         <form method="get" class="mb-3 d-flex">
-            <input type="text" name="search" value="{{ search }}" class="form-control me-2" placeholder="Rechercher...">
+            <input type="text" name="search_adherents" value="{{ search_adherents }}" class="form-control me-2" placeholder="Rechercher...">
             <button class="btn btn-primary">Rechercher</button>
         </form>
-
           <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     {% set col_labels = {
                         'id': 'ID',
                         'nom': 'Nom',
-                        'cours': 'Cours',
                         'prenom': 'Prénom',
                         'telephone': 'Téléphone',
                         'email':'Email',
@@ -40,9 +40,10 @@
                         'categorie_age': "Catégorie d'âge",
                         'Dojo': 'Dojo'
                     } %}
-                    {% for col in ['nom', 'prenom','categorie_age','Dojo','date_inscription','cours'] %}
+
+                        {% for col in [ 'nom', 'prenom','categorie_age','Dojo','date_inscription','telephone',] %}
                         <th>
-                            <a href="?search={{ search }}&sort={{ col }}&direction={{ 'asc' if direction == 'desc' else 'desc' }}">
+                            <a href="?search_adherents={{ search_adherents }}&sort_adherents={{ col }}&direction_adherents={{ 'asc' if direction_adherents == 'desc' else 'desc' }}">
                                 {{ col_labels[col] |capitalize }}
                             </a>
                         </th>
@@ -53,33 +54,18 @@
             <tbody>
                 {% for u in adherents %}
                     <tr>
-                         <td>{{ u.nom }}</td>
+
+                        <td>{{ u.nom }}</td>
                         <td>{{ u.prenom }}</td>
                         <td>{{ u.categorie_age }}</td>
                         <td>{{ u.Dojo.nom }}</td>
+                        <td>{{ u.date_inscription[8:10] }}/{{ u.date_inscription[5:7] }}/{{ u.date_inscription[0:4] }}</td>
+                        <td>{{ u.telephone }}</td>
+
                         <td>
-                          {% if u.date_inscription %}
-                            {{ u.date_inscription[8:10] }}/{{ u.date_inscription[5:7] }}/{{ u.date_inscription[0:4] }}
-                          {% else %}
-                            -
-                          {% endif %}
-                        </td>
-                        <td>
-                            {% if u.Cours %}
-                                  {% for cours in u.Cours %}
-                                    <a href="{{ url_for('cours.modifier_cours', cours_id=cours.id) }}">
-                                        {{ cours.jour }} {{cours.heure[:5]}}
-                                    </a>
-                                    <br>
-                                  {% endfor %}
-                            {% else %}
-                              Aucun cours
-                            {% endif %}
-                        </td>
-                        <td>
-                           <a href="{{ url_for('adherents.fiche_adherent', adherent_id=u.id) }}" class="btn btn-link">Fiche</a>
+                            <a href="{{ url_for('adherents.fiche_adherent', adherent_id=u.id) }}" class="btn btn-link">Fiche</a>
                             <a href="{{ url_for('adherents.modifier_adherent', adherent_id=u.id) }}" class="btn btn-link">Modifier</a>
-                            <a href="{{ url_for('adherents.supprimer_adherent', adherent_id=u.id) }}" class="btn btn-link">Supprimer</a>
+                            <a href="{{ url_for('adherents.supprimer_adherent', adherent_id=u.id) }}" class="btn btn-link d-none">Supprimer</a>
                         </td>
 
                     </tr>
@@ -89,15 +75,32 @@
 
             <nav>
               <ul class="pagination">
-                {% for p in range(1, pagination.pages + 1) %}
-                  <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                    <a class="page-link" href="?page={{ p }}&search={{ search }}&sort={{ sort }}&direction={{ direction }}">{{ p }}</a>
+                {% for p in range(1, pagination_adherents.pages_adherents + 1) %}
+                  <li class="page-item {% if p == pagination_adherents.page %}active{% endif %}">
+                    <a class="page-link" href="?page_adherents={{ p }}&search_adherents={{ search_adherents }}&sort_adherents={{ sort_adherents }}&direction_adherents={{ direction_adherents }}">{{ p }}</a>
                   </li>
                 {% endfor %}
               </ul>
             </nav>
 
 
+    {% if distincts_appel_dates_by_cours %}
+            <div style="" class="mt-5 mb-2">
+              <div style="display:flex;justify-content: space-between;">
+                <div class="text-left">
+                  <h3>Liste des appels</h3>
+                </div>
+              </div>
+            </div>
+
+         <ul class="">
+                {% for appel in distincts_appel_dates_by_cours %}
+                  <li class="li-under">
+                    <a class="" href="{{ url_for('adherents.liste_des_appels_par_cours_et_date', cours_id=cours.id,date=appel) }}">Cours du {{ appel[8:10] }}/{{ appel[5:7] }}/{{ appel[0:4] }}</a>
+                  </li>
+                {% endfor %}
+         </ul>
+ {% endif %}
         </div>
      <div class="col-2">
      </div>

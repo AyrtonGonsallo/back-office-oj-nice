@@ -17,7 +17,8 @@ class FormEditCours(FlaskForm):
     )
     categorie_age = SelectMultipleField(
         "catégorie d'âge",
-        choices=[("Baby", "Baby"), ("Mini", "Mini"), ("Cadet", "Cadet"), ("Junior", "Junior"), ("Senior", "Senior")],
+        choices=[("éveil", "éveil"),("mini poussins", "mini poussins"),("poussin", "poussin"),("minimes", "minimes"),("benjamin", "benjamin"),
+                 ("juniors", "juniors"),("cadets", "cadets"),],
         validators=[DataRequired()]
     )
     submit = SubmitField('Modifier')

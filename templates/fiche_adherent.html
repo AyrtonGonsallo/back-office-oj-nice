@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+ <div class="row">
+     <div class="col-2">
+     </div>
+     <div class="col-sm-8 col-12">
+         <div style="border-bottom: black 3px solid; margin-bottom: 50px;">
+              <div style="display:flex;justify-content: space-between;">
+                <div class="text-left">
+                  <h1>Gestion des adhérents</h1>
+                </div>
+                <div style="align-items: center;display: flex;justify-content: center;">
+                    #{{adherent.id}}
+                </div>
+              </div>
+
+         </div>
+
+        {% from 'bootstrap5/table.html' import render_table %}
+        <div class="row">
+             <div class="col-3">
+                 Nom : {{adherent.nom}}
+             </div>
+            <div class="col-3">
+                Prénom : {{adherent.prenom}}
+             </div>
+        </div>
+         <div class="row">
+             <div class="col-12">
+                 Catégorie d'âge : {{adherent.categorie_age}}
+             </div>
+        </div>
+         <div class="row">
+             <div class="col-3">
+                 Tel : {{adherent.telephone}}
+             </div>
+            <div class="col-6">
+                Email : {{adherent.email}}
+             </div>
+        </div>
+         <div class="row">
+             <div class="col-3">
+                 Dojo : {{adherent.Dojo.nom}}
+             </div>
+            <div class="col-6">
+                Cours :
+                {% if adherent.Cours %}
+                      {% for cours in adherent.Cours %}
+                        <a href="{{ url_for('cours.modifier_cours', cours_id=cours.id) }}">
+                            {{ cours.jour }} {{cours.heure[:5]}}</a>
+                        /
+                      {% endfor %}
+                {% else %}
+                  Aucun cours
+                {% endif %}
+             </div>
+        </div>
+
+        {% if appels %}
+          <table class="table table-bordered table-hover mt-5">
+            <thead>
+                <tr>
+                    {% set col_labels2 = {
+                        'status': 'Status',
+                        'date': 'Date',
+                        'Adherent': "Adhérent",
+                        'Cour': "Cours",
+                    } %}
+
+                        {% for col in [ 'date','status','Cour'] %}
+                        <th>
+                            <a href="?search_appels={{ search_appels }}&sort_appels={{ col }}&direction_appels={{ 'asc' if direction_appels == 'desc' else 'desc' }}">
+                                {{ col_labels2[col] |capitalize }}
+                            </a>
+                        </th>
+                    {% endfor %}
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in appels %}
+                    <tr>
+
+                        <td>{{ u.date[8:10] }}/{{ u.date[5:7] }}/{{ u.date[0:4] }}</td>
+                        <td>
+                            <a href="{{ url_for('appels.modifier_status_appel', appel_id=u.id,cours_id=u.coursId,adherent_id=u.adherentId,liste_des_appels_par_cours=false,date=2) }}" class="btn btn-link">
+                                {% if u.status %}
+                                  ✅
+                                {% else %}
+                                  ⛔
+                                {% endif %}
+                            </a>
+                        </td>
+
+                        <td>{{ u.Cour.jour }} {{ u.Cour.heure[:5] }}</td>
+
+
+                        <td>
+                           <a href="{{ url_for('appels.supprimer_appel', appel_id=u.id,cours_id=u.coursId,adherent_id=u.adherentId,liste_des_appels_par_cours=false) }}" class="btn btn-link truc_de_dev">Supprimer</a>
+                            <a href="{{ url_for('adherents.liste_des_appels_par_cours_et_date', cours_id=u.coursId,date=u.date) }}" class="btn btn-link">Modifier</a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+
+            <nav>
+              <ul class="pagination">
+                {% for p in range(1, pagination_appels.page + 1) %}
+                  <li class="page-item {% if p == pagination_appels.page %}active{% endif %}">
+                    <a class="page-link" href="?page_appels={{ p }}&search_appels={{ search_appels }}&sort_appels={{ sort_appels }}&direction_appels={{ direction_appels }}">{{ p }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </nav>
+
+    {% endif %}
+
+     </div>
+     <div class="col-2">
+     </div>
+</div>
+
+{% endblock %}

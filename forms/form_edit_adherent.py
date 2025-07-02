@@ -1,0 +1,29 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, SelectField, TimeField, SelectMultipleField, EmailField, DateField
+from wtforms.validators import DataRequired, Regexp
+
+
+class FormEditAdherent(FlaskForm):
+    nom = StringField('nom', validators=[DataRequired()])
+    prenom = StringField('prenom', validators=[DataRequired()])
+    email = EmailField('email', validators=[DataRequired()])
+    telephone = StringField('telephone', validators=[DataRequired(),Regexp(
+            r'^(0|\+33)*[1-9](\d{2}){4}$',
+            message="Numéro de téléphone invalide. Format attendu : 0601020304 ou +33601020304"
+        )])
+    date_inscription = DateField('date d\'inscription', validators=[DataRequired()])
+    dojoId = SelectField('dojo', choices=[],coerce=int, validators=[DataRequired()])
+    coursId = SelectMultipleField(
+        'cours',
+        choices=[],  # rempli dynamiquement dans ta vue
+        coerce=int,  # important pour recevoir des entiers
+        validators=[DataRequired()]
+    )
+    categorie_age = SelectField(
+        "catégorie d'âge",
+        choices=[("éveil", "éveil"),("mini poussins", "mini poussins"),("poussin", "poussin"),("minimes", "minimes"),("benjamin", "benjamin"),
+                 ("juniors", "juniors"),("cadets", "cadets"),],
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField('Modifier')

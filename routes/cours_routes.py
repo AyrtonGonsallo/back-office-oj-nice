@@ -73,6 +73,18 @@ def cours():
         return f"Erreur de requête : {e}"
 
 
+def get_day_id(jour):
+    jours = {
+        "Lundi": 1,
+        "Mardi": 2,
+        "Mercredi": 3,
+        "Jeudi": 4,
+        "Vendredi": 5,
+        "Samedi": 6,
+        "Dimanche": 7
+    }
+    return jours.get(jour, None)
+
 @bp.route('/ajouter_cours', methods=['GET', 'POST'])
 def ajouter_cours():
     user = session.get('user')
@@ -91,7 +103,7 @@ def ajouter_cours():
 
     # Récupération des rôles pour le champ select
     try:
-        response = requests.get(f'{API_BASE_URL}/api/auth/get_professeurs')
+        response = requests.get(f'{API_BASE_URL}/api/professeurs/get_professeurs')
         response.raise_for_status()
         professeurs = response.json()
     except requests.RequestException:
@@ -107,6 +119,7 @@ def ajouter_cours():
         dojoId = form.dojoId.data
         profsIds = form.profsId.data  # liste d'IDs
         categories = form.categorie_age.data  # liste aussi (car SelectMultipleField)
+        jour_num = get_day_id(form.jour.data)
 
         # Construction du payload à envoyer
         payload = {
@@ -114,7 +127,8 @@ def ajouter_cours():
             'jour': jour,
             'dojoId': dojoId,
             'profsIds': profsIds,  # tableau
-            'categorie_age': categories  # tableau
+            'categorie_age': categories,  # tableau
+            'jour_num': jour_num
         }
 
         try:
@@ -151,7 +165,7 @@ def modifier_cours(cours_id):
 
     # Récupération des rôles pour le champ select
     try:
-        response = requests.get(f'{API_BASE_URL}/api/auth/get_professeurs')
+        response = requests.get(f'{API_BASE_URL}/api/professeurs/get_professeurs')
         response.raise_for_status()
         professeurs = response.json()
     except requests.RequestException:
@@ -200,7 +214,8 @@ def modifier_cours(cours_id):
             'jour': form2.jour.data,
             'dojoId': form2.dojoId.data,
             'profsIds': form2.profsId.data,
-            'categorie_age': form2.categorie_age.data  # liste
+            'categorie_age': form2.categorie_age.data,  # liste
+            'jour_num' : get_day_id(form2.jour.data)
         }
 
         try:
@@ -219,7 +234,7 @@ def modifier_cours(cours_id):
     else:
         if request.method == 'POST':
             print(form2.errors)
-            flash("Le formulaire contient des erreurs.", "warning")
+            flash("Certains champs n'ont pas été remplis.", "warning")
 
     return render_template('modifier_cours.html', user=user, form=form2)
 

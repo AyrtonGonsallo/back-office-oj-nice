@@ -10,6 +10,8 @@
         {% block styles %}
             <!-- Bootstrap CSS -->
             {{ bootstrap.load_css() }}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
         {% endblock %}
 
 
@@ -40,7 +42,7 @@
             <a class="nav-link" href="/cours">Cours</a>
           </li>
             <li class="nav-item">
-            <a class="nav-link" href="/dojos">Dojos / Ecoles</a>
+            <a class="nav-link" href="/dojos">Dojos / Écoles</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/gestion_des_comptes">Gestion des comptes</a>
@@ -48,7 +50,9 @@
             <li class="nav-item">
             <a class="nav-link" href="/parametres">Paramètres</a>
           </li>
-
+            <li class="nav-item">
+            <a class="nav-link" href="/professeurs">Professeurs</a>
+          </li>
         </ul>
           <!--
         <form class="d-flex">

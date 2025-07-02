@@ -1,0 +1,18 @@
+a{
+    color:black;
+    font-weight:bolder;
+    text-decoration:none;
+}
+a:hover{
+    color:#0a58ca;
+}
+.li-under{
+    text-decoration:underline;
+}
+ul{
+    list-style:none;
+    padding:0
+}
+.truc_de_dev{
+    display:none
+}

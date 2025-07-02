@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Gestion des dojos{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block content %}
  <div class="row">
@@ -10,10 +10,10 @@
          <div style="border-bottom: black 3px solid; margin-bottom: 50px;">
               <div style="display:flex;justify-content: space-between;">
                 <div class="text-left">
-                  <h1>Gestion des dojos</h1>
+                  <h1>Gestion des professeurs</h1>
                 </div>
                 <div style="align-items: center;display: flex;justify-content: center;">
-                  <a href="{{ url_for('dojos.ajouter_dojo') }}" class="btn btn-dark">Ajouter un dojo</a>
+                  <a href="{{ url_for('gestion_des_comptes.ajouter_utilisateur') }}" class="btn btn-dark">Ajouter un professeur</a>
                 </div>
               </div>
 
@@ -29,7 +29,7 @@
           <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    {% for col in [ 'nom','liste des cours','professeurs'] %}
+                    {% for col in ['id', 'nom', 'prenom', 'email','role'] %}
                         <th>
                             <a href="?search={{ search }}&sort={{ col }}&direction={{ 'asc' if direction == 'desc' else 'desc' }}">
                                 {{ col|capitalize }}
@@ -40,37 +40,17 @@
                 </tr>
             </thead>
             <tbody>
-                {% for d in dojos %}
+                {% for u in professeurs %}
                     <tr>
-
-                        <td>{{ d.nom }}</td>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nom }}</td>
+                        <td>{{ u.prenom }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.Role.titre }}</td>
                         <td>
-                            {% if d.Cours %}
-                                  {% for cours in d.Cours %}
-                                    <a href="{{ url_for('cours.modifier_cours', cours_id=cours.id) }}">
-                                        {{ cours.jour }} {{cours.heure[:5]}}
-                                    </a>
-                                    <br>
-                                  {% endfor %}
-                            {% else %}
-                              Aucun cours
-                            {% endif %}
+                            <a href="{{ url_for('gestion_des_comptes.modifier_utilisateur', user_id=u.id) }}" class="btn btn-link">Modifier</a>
+                            <a href="{{ url_for('gestion_des_comptes.supprimer_utilisateur', user_id=u.id) }}" class="btn btn-link">Supprimer</a>
                         </td>
-                        <td>
-                            {% if d.Utilisateurs %}
-                              {% for prof in d.Utilisateurs %}
-                                {{ prof.nom }} {{ prof.prenom }}<br>
-                              {% endfor %}
-                            {% else %}
-                              Aucun prof
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            <a href="{{ url_for('dojos.modifier_dojo', dojo_id=d.id) }}" class="btn btn-link">Modifier</a>
-                            <a href="{{ url_for('dojos.supprimer_dojo', dojo_id=d.id) }}" class="btn btn-link">Supprimer</a>
-
-                            </td>
 
                     </tr>
                 {% endfor %}

@@ -56,6 +56,7 @@
                             {% endif %}
                         </td>
                         <td>
+                            <a href="{{ url_for('adherents.liste_des_appels_par_cours', cours_id=c.id) }}" class="btn btn-link">Appels / Adhérents</a>
                             <a href="{{ url_for('cours.modifier_cours', cours_id=c.id) }}" class="btn btn-link">Modifier</a>
                             <a href="{{ url_for('cours.supprimer_cours', cours_id=c.id) }}" class="btn btn-link">Supprimer</a>
 
