@@ -1,11 +1,12 @@
 import os
 
+import requests
 from flask_bootstrap import Bootstrap5
 from flask import Flask, render_template, url_for, redirect, session
 
 
 from routes import auth_routes, gestion_des_comptes_routes, dojos_routes, cours_routes, professeurs_routes, \
-    adherents_routes, appel_routes
+    adherents_routes, appel_routes, qrcode_routes
 
 app = Flask(__name__)
 app.secret_key = 'super-seecret-key'  # Requis pour les formulaires CSRF
@@ -15,7 +16,7 @@ API_BASE_URL = os.getenv('API_BASE_URL')
 app.register_blueprint(auth_routes.bp)
 app.register_blueprint(gestion_des_comptes_routes.bp)
 app.register_blueprint(appel_routes.bp)
-
+app.register_blueprint(qrcode_routes.bp)
 app.register_blueprint(dojos_routes.bp)
 app.register_blueprint(cours_routes.bp)
 app.register_blueprint(professeurs_routes.bp)
@@ -28,7 +29,17 @@ def tableau_de_bord():
     user = session.get('user')
     if not user:
         return redirect(url_for('auth.login'))
-    return render_template('tableau_de_bord.html', user=user)
+    response = requests.get(f'{API_BASE_URL}/api/statistiques/get_absences_consecutives')
+    response.raise_for_status()
+    appels = response.json()
+    response = requests.get(f'{API_BASE_URL}/api/statistiques/presence_semaine_travail')
+    response.raise_for_status()
+    presence_semaine_travail = response.json()
+    response = requests.get(f'{API_BASE_URL}/api/statistiques/presence_par_dojo')
+    response.raise_for_status()
+    presence_par_dojo = response.json()
+
+    return render_template('tableau_de_bord.html', user=user,appels_consecutifs=appels,presence_par_dojo=presence_par_dojo,presence_semaine_travail=presence_semaine_travail)
 
 
 @app.route('/adherents', methods=['GET', 'POST'])

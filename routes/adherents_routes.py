@@ -123,19 +123,10 @@ def liste_des_appels_par_cours(cours_id):
             reverse=(direction_adherents == 'desc')
         )
 
-        # Pagination manuelle
-        total_adherents = len(adherents)
-        start_adherents = (page_adherents - 1) * per_page_adherents
-        end_adherents = start_adherents + per_page_adherents
-        adherents_page = adherents[start_adherents:end_adherents]
 
-        # Pour le template
-        pagination_adherents = {
-            'page': page_adherents,
-            'per_page': per_page_adherents,
-            'total_adherents': total_adherents,
-            'pages_adherents': (total_adherents + per_page_adherents - 1) // per_page_adherents,
-        }
+        adherents_page = adherents
+
+
 
         response = requests.get(f'{API_BASE_URL}/api/adherents/get_distincts_appel_dates_by_cours/{cours_id}')
         response.raise_for_status()
@@ -185,7 +176,6 @@ def liste_des_appels_par_cours(cours_id):
         return render_template(
             'liste_des_appels.html',
             adherents=adherents_page,
-            pagination_adherents=pagination_adherents,
             search_adherents=search_adherents,
             sort_adherents=sort_adherents,
             direction_adherents=direction_adherents,
@@ -259,19 +249,7 @@ def liste_des_appels_par_cours_et_date(cours_id,date):
             reverse=(direction_appels == 'desc')
         )
 
-        # Pagination manuelle
-        total_appels = len(appels)
-        start_appels = (page_appels - 1) * per_page_appels
-        end_appels = start_appels + per_page_appels
-        appels_page = appels[start_appels:end_appels]
 
-        # Pour le template
-        pagination_appels = {
-            'page': page_appels,
-            'per_page': per_page_appels,
-            'total_appels': total_appels,
-            'pages_appels': (total_appels + per_page_appels - 1) // per_page_appels,
-        }
 
 
 
@@ -279,8 +257,7 @@ def liste_des_appels_par_cours_et_date(cours_id,date):
         return render_template(
             'liste_des_appels_detaillee.html',
 
-            appels=appels_page,
-            pagination_appels=pagination_appels,
+            appels=appels,
             search_appels=search_appels,
             sort_appels=sort_appels,
             direction_appels=direction_appels,

@@ -21,31 +21,15 @@
 
         {% from 'bootstrap5/table.html' import render_table %}
         <div class="row">
-             <div class="col-3">
-                 Nom : {{adherent.nom}}
+             <div class="col-4">
+                 Nom : {{adherent.nom}}<br>
+                 Catégorie d'âge : {{adherent.categorie_age}}<br>
+                 Tel : {{adherent.telephone}}<br>
+                 Dojo : {{adherent.Dojo.nom}}<br>
              </div>
-            <div class="col-3">
-                Prénom : {{adherent.prenom}}
-             </div>
-        </div>
-         <div class="row">
-             <div class="col-12">
-                 Catégorie d'âge : {{adherent.categorie_age}}
-             </div>
-        </div>
-         <div class="row">
-             <div class="col-3">
-                 Tel : {{adherent.telephone}}
-             </div>
-            <div class="col-6">
-                Email : {{adherent.email}}
-             </div>
-        </div>
-         <div class="row">
-             <div class="col-3">
-                 Dojo : {{adherent.Dojo.nom}}
-             </div>
-            <div class="col-6">
+            <div class="col-4">
+                Prénom : {{adherent.prenom}}<br>
+                 Email : {{adherent.email}}<br>
                 Cours :
                 {% if adherent.Cours %}
                       {% for cours in adherent.Cours %}
@@ -57,7 +41,13 @@
                   Aucun cours
                 {% endif %}
              </div>
+            <div class="col-4">
+                <img src="data:image/png;base64,{{ adherent.qrcode }}" width="200px" alt="QR Code de {{ adherent.nom }}">
+
+             </div>
+
         </div>
+
 
         {% if appels %}
           <table class="table table-bordered table-hover mt-5">
@@ -120,6 +110,8 @@
             </nav>
 
     {% endif %}
+
+         
 
      </div>
      <div class="col-2">

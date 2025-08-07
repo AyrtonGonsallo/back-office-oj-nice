@@ -3,6 +3,95 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
- <h1 class="mt-5">home</h1>
-        <p>Bienvenue {{user.nom}} {{user.prenom}}</p>
+
+<div class="row">
+     <div class="col-2">
+     </div>
+     <div class="col-sm-8 col-12">
+
+        <div class="container text-center">
+          <div class="row">
+            <div class="col-12 col-lg-6">
+               <div class="row">
+                <div class="col-12 mt-2 mb-2">
+
+                    <div class="card" style="width: 25rem;">
+                        <div class="card-header">
+                        Semaine {{presence_semaine_travail.semaineTravail}} (sur 36)
+                      </div>
+                      <div class="card-body">
+                        <p class="card-text">Nombre de présences par judoka depuis le début de la saison : {{presence_semaine_travail.pourcentageTotal}}</p>
+                        <p class="card-text">Présences semaine {{presence_semaine_travail.semaineTravail}} : {{presence_semaine_travail.pourcentageSemaine}}%</p>
+                        <p class="card-text">Présences depuis le début de saison : {{presence_semaine_travail.pourcentageTotal}}%</p>
+
+                        <a href="#" class="btn btn-link">voir détail</a>
+
+                      </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-2 mb-2">
+                  <div class="card" style="width: 25rem;">
+                      <div class="card-header">
+                        Absences consécutives
+                      </div>
+                      <div class="list-wrapper">
+                        <ul class="list-group list-group-flush" id="absence-list">
+                            {% for appel in appels_consecutifs %}
+                            <li class="list-group-item flex-between"><span>{{ appel.adherent.nom }} {{ appel.adherent.prenom }} - {{ appel.adherent.Dojo.nom }}</span> <span>({{ appel.absences|length }})</span></li>
+                            {% endfor %}
+                        </ul>
+                        <div class="fade-out"></div> <!-- Dégradé bas -->
+                      </div>
+                      <div class="card-footer text-center">
+                        <button id="toggle-btn" class="btn btn-link">Voir plus</button>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="card mb-2 mt-2" style="width: 30rem;">
+                        <div class="card-header">
+                        Présences par tranches d’âges et par Dojo
+                      </div>
+                      <div class="card-body">
+
+                      <div class="accordion" id="accordionExample">
+                            {% for pd in presence_par_dojo %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ pd.dojoId }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ pd.dojoId }}" aria-expanded="false" aria-controls="collapse{{ pd.dojoId }}">
+                                            {{ pd.dojoName }} - fréquentation globale : {{ pd.pourcentageTotal }} %
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ pd.dojoId }}" class="accordion-collapse collapse" aria-labelledby="heading{{ pd.dojoId }}" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <ul class="list-group list-group-flush">
+                                                {% for cat in pd.categories %}
+                                                    <li class="list-group-item flex-between">
+                                                        {{ cat.categorie_age }} : {{ cat.pourcentage }}%
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+            </div>
+          </div>
+        </div>
+     </div>
+     <div class="col-2">
+     </div>
+</div>
+
+
+
+</div>
+
+
+
 {% endblock %}

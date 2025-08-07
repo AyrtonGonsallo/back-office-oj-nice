@@ -73,15 +73,7 @@
             </tbody>
           </table>
 
-            <nav>
-              <ul class="pagination">
-                {% for p in range(1, pagination_adherents.pages_adherents + 1) %}
-                  <li class="page-item {% if p == pagination_adherents.page %}active{% endif %}">
-                    <a class="page-link" href="?page_adherents={{ p }}&search_adherents={{ search_adherents }}&sort_adherents={{ sort_adherents }}&direction_adherents={{ direction_adherents }}">{{ p }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
-            </nav>
+
 
 
     {% if distincts_appel_dates_by_cours %}

@@ -88,15 +88,7 @@
             </tbody>
           </table>
 
-            <nav >
-              <ul class="pagination">
-                {% for p in range(1, pagination_appels.pages_appels + 1) %}
-                  <li class="page-item {% if p == pagination_appels.page %}active{% endif %}">
-                    <a class="page-link" href="?page_appels={{ p }}&search_appels={{ search_appels }}&sort_appels={{ sort_appels }}&direction_appels={{ direction_appels }}">{{ p }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
-            </nav>
+
 
 
 

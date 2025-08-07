@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+ <div class="row">
+     <div class="col-2">
+     </div>
+     <div class="col-sm-8 col-12">
+         <div style="border-bottom: black 3px solid; margin-bottom: 50px;">
+              <div style="display:flex;justify-content: space-between;">
+                <div class="text-left">
+                  <h1>Generation du qrcode</h1>
+                </div>
+
+                  <!-- Formulaire invisible pour soumettre les IDs -->
+                <form id="qr-form" method="POST" action="{{ url_for('qrcode.generation_qrcode') }}">
+                  <input type="hidden" name="ids" id="selected-ids">
+                  <div style="align-items: center;display: flex;justify-content: center; margin-top: 10px;">
+                    <button type="submit" class="btn btn-dark">Générer le QR code</button>
+                  </div>
+                </form>
+
+              </div>
+
+         </div>
+
+        {% from 'bootstrap5/table.html' import render_table %}
+
+        <form method="get" class="mb-3 d-flex">
+            <input type="text" name="search" value="{{ search }}" class="form-control me-2" placeholder="Rechercher...">
+            <button class="btn btn-primary">Rechercher</button>
+        </form>
+
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" id="select-all">
+                </th>
+                {% set col_labels = {
+                    'id': 'ID',
+                    'nom': 'Nom',
+                    'cours': 'Cours',
+                    'prenom': 'Prénom',
+                    'telephone': 'Téléphone',
+                    'email':'Email',
+                    'date_inscription': "Date d'inscription",
+                    'categorie_age': "Catégorie d'âge",
+                    'Dojo': 'Dojo'
+                } %}
+                {% for col in ['nom', 'prenom','categorie_age','Dojo','date_inscription','cours'] %}
+                  <th>
+                    <a href="?search={{ search }}&sort={{ col }}&direction={{ 'asc' if direction == 'desc' else 'desc' }}">
+                      {{ col_labels[col] | capitalize }}
+                    </a>
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for u in adherents %}
+                <tr>
+                  <td><input type="checkbox" class="row-checkbox" name="selected_ids" value="{{ u.id }}"></td>
+                  <td><a href="{{ url_for('adherents.fiche_adherent', adherent_id=u.id) }}" >{{ u.nom }} </a></td>
+                  <td><a href="{{ url_for('adherents.fiche_adherent', adherent_id=u.id) }}" >{{ u.prenom }}</a></td>
+                  <td>{{ u.categorie_age }}</td>
+                  <td>{{ u.Dojo.nom }}</td>
+                  <td>
+                    {% if u.date_inscription %}
+                      {{ u.date_inscription[8:10] }}/{{ u.date_inscription[5:7] }}/{{ u.date_inscription[0:4] }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if u.Cours %}
+                      {% for cours in u.Cours %}
+                        <a href="{{ url_for('cours.modifier_cours', cours_id=cours.id) }}">
+                          {{ cours.jour }} {{cours.heure[:5]}}
+                        </a>
+                        <br>
+                      {% endfor %}
+                    {% else %}
+                      Aucun cours
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+
+            <nav>
+              <ul class="pagination">
+                {% for p in range(1, pagination.pages + 1) %}
+                  <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ p }}&search={{ search }}&sort={{ sort }}&direction={{ direction }}">{{ p }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </nav>
+
+
+        </div>
+     <div class="col-2">
+     </div>
+</div>
+
+{% endblock %}
