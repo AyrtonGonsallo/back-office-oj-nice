@@ -11,33 +11,33 @@
 
         <div class="container text-center">
           <div class="row">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-xxl-7">
                <div class="row">
                 <div class="col-12 mt-2 mb-2">
 
-                    <div class="card" style="width: 25rem;">
+                    <div class="card" style="width: 35rem;">
                         <div class="card-header">
                         Semaine {{presence_semaine_travail.semaineTravail}} (sur 36)
                       </div>
                       <div class="card-body">
-                        <p class="card-text">Nombre de présences par judoka depuis le début de la saison : {{presence_semaine_travail.pourcentageTotal}}</p>
+                        <p class="card-text">Nombre de présences par judoka depuis le début de la saison : {{presence_semaine_travail.presences_par_judokas}}</p>
                         <p class="card-text">Présences semaine {{presence_semaine_travail.semaineTravail}} : {{presence_semaine_travail.pourcentageSemaine}}%</p>
                         <p class="card-text">Présences depuis le début de saison : {{presence_semaine_travail.pourcentageTotal}}%</p>
 
-                        <a href="#" class="btn btn-link">voir détail</a>
+                        <a href="{{ url_for('presences.presences_par_semaines') }}" class="btn btn-link">voir détail</a>
 
                       </div>
                     </div>
                 </div>
                 <div class="col-12 mt-2 mb-2">
-                  <div class="card" style="width: 25rem;">
+                  <div class="card" style="width: 35rem;">
                       <div class="card-header">
                         Absences consécutives
                       </div>
                       <div class="list-wrapper">
                         <ul class="list-group list-group-flush" id="absence-list">
                             {% for appel in appels_consecutifs %}
-                            <li class="list-group-item flex-between"><span>{{ appel.adherent.nom }} {{ appel.adherent.prenom }} - {{ appel.adherent.Dojo.nom }}</span> <span>({{ appel.absences|length }})</span></li>
+                            <li class="list-group-item flex-between"><div>{{ appel.adherent.nom }} {{ appel.adherent.prenom }} - {{ appel.adherent.Dojo.nom }} - {% if appel.absences[0] %}{{ appel.absences[0].Cour.jour }} {{ appel.absences[0].Cour.heure[0:5] }} {% endif %}</div> <div>({{ appel.absences|length }})</div></li>
                             {% endfor %}
                         </ul>
                         <div class="fade-out"></div> <!-- Dégradé bas -->
@@ -49,7 +49,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-xxl-5">
               <div class="card mb-2 mt-2" style="width: 30rem;">
                         <div class="card-header">
                         Présences par tranches d’âges et par Dojo
@@ -84,10 +84,10 @@
           </div>
         </div>
      </div>
-     <div class="col-2">
-     </div>
-</div>
 
+</div>
+<div class="col-2">
+     </div>
 
 
 </div>

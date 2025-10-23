@@ -49,5 +49,32 @@ $(document).ready(function () {
     });
   }
 
+
+  // Soumission du formulaire
+  const $form2 = $('#qr-form2');
+  const $hiddenInput2 = $('#selected-ids2');
+
+  if ($form2.length && $hiddenInput2.length) {
+    $form2.on('submit', function (e) {
+      e.preventDefault();
+      const selectedIds2 = $('.row-checkbox:checked').map(function () {
+        return $(this).val();
+      }).get();
+
+      if (selectedIds2.length === 0) {
+        alert("Veuillez sélectionner au moins un adhérent.");
+        return;
+      }
+
+      $hiddenInput2.val(selectedIds2.join(','));
+
+      // Décommente si tu veux vraiment envoyer
+       this.submit();
+
+      // Pour test
+      console.log("Soumission avec IDs :", selectedIds2);
+    });
+  }
+
 });
 

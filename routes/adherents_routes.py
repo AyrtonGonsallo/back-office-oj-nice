@@ -12,11 +12,52 @@ API_BASE_URL = os.getenv('API_BASE_URL')
 
 
 
+
+
+def importer_adherents(file_storage):
+    """
+    file_storage : objet FileStorage de Flask (request.files['file'])
+    """
+    try:
+        print("envoi 1")
+        files = {'file': file_storage}
+        print("envoi ",files)
+        response = requests.post(f'{API_BASE_URL}/api/adherents/import_adherents', files=files)
+        print("=== DEBUG REQUEST ===")
+        print("URL :", response.request.url)
+        print("Méthode :", response.request.method)
+        print("Headers envoyés :")
+        for k, v in response.request.headers.items():
+            print(f"  {k}: {v}")
+        print("reponse ", response)
+        print(response.status_code)
+
+        response.raise_for_status()
+
+        data = response.json()
+        print("data ",data)
+
+        if data.get('success'):
+            flash('Import Excel terminé !', 'success')
+        else:
+            flash(f"Erreur import : {data.get('error', 'Unknown')}", 'danger')
+    except requests.RequestException as e:
+        flash(f"Erreur réseau/API : {e}", 'danger')
+
+
 @bp.route('/adherents', methods=['GET', 'POST'])
 def adherents():
     user = session.get('user')
     if not user:
         return redirect(url_for('login'))
+
+    if request.method == 'POST' and 'import_excel' in request.form:
+        file = request.files.get('file')
+        if file:
+            importer_adherents(file)
+        else:
+            flash("Aucun fichier sélectionné", "danger")
+        return redirect(url_for('adherents'))
 
     # Paramètres de recherche et tri
     search = request.args.get('search', '')
@@ -38,7 +79,9 @@ def adherents():
         # Tri
         adherents = sorted(
             adherents,
-            key=lambda x: x['Dojo']['nom'] if sort == 'Dojo' else x.get(sort, ''),
+            key=lambda x: (
+                (x.get('Dojo') or {}).get('nom') if sort == 'Dojo'  else (x.get(sort) or '')
+            ),
             reverse=(direction == 'desc')
         )
 
@@ -48,7 +91,6 @@ def adherents():
         end = start + per_page
         adherents_page = adherents[start:end]
 
-        # Pour le template
         pagination = {
             'page': page,
             'per_page': per_page,
@@ -68,6 +110,8 @@ def adherents():
 
     except requests.RequestException as e:
         return f"Erreur de requête : {e}"
+
+
 
 
 
@@ -300,14 +344,25 @@ def ajouter_adherent():
 
     if form.validate_on_submit():
         # Traiter les données du formulaire ici
-        nom = form.nom.data
-        prenom = form.prenom.data
-        email = form.email.data
-        telephone = form.telephone.data
-        dojoId = form.dojoId.data
-        date_inscription = form.date_inscription.data.strftime('%Y-%m-%d')  # ✅ Date complète (YYYY-MM-DD)
-        cours_ids = form.coursId.data  # ✅ Liste d'IDs (SelectMultipleField)
-        categorie_age = form.categorie_age.data  # ✅ Peut être une liste ou une chaîne selon ton form
+        nom = form.nom.data.strip() if form.nom.data else None
+        prenom = form.prenom.data.strip() if form.prenom.data else None
+        email = form.email.data.strip() if form.email.data else None
+        telephone = form.telephone.data.strip() if form.telephone.data else None
+
+        dojoId = form.dojoId.data or None
+
+        # Gestion de la date (évite les erreurs si non remplie)
+        date_inscription = (
+            form.date_inscription.data.strftime('%Y-%m-%d')
+            if form.date_inscription.data
+            else None
+        )
+
+        # Cours (liste vide ou null)
+        cours_ids = form.coursId.data or []
+
+        # Catégorie âge (selon ton form)
+        categorie_age = form.categorie_age.data or None
 
         # Construction du payload pour l'API backend Node.js
         payload = {
@@ -410,14 +465,30 @@ def modifier_adherent(adherent_id):
 
     if form.validate_on_submit():
         # Traiter les données du formulaire ici
-        nom = form.nom.data
-        prenom = form.prenom.data
-        email = form.email.data
-        telephone = form.telephone.data
-        dojoId = form.dojoId.data
-        date_inscription = form.date_inscription.data.strftime('%Y-%m-%d')  # ✅ Date complète (YYYY-MM-DD)
-        cours_ids = form.coursId.data  # ✅ Liste d'IDs (SelectMultipleField)
-        categorie_age = form.categorie_age.data  # ✅ Peut être une liste ou une chaîne selon ton form
+        nom = form.nom.data.strip() if form.nom.data else None
+        prenom = form.prenom.data.strip() if form.prenom.data else None
+        email = form.email.data.strip() if form.email.data else None
+        telephone = form.telephone.data.strip() if form.telephone.data else None
+
+        dojoId = form.dojoId.data or None
+
+        # ✅ Gestion robuste de la date
+        if form.date_inscription.data:
+            try:
+                date_inscription = form.date_inscription.data.strftime('%Y-%m-%d')
+            except Exception:
+                date_inscription = None
+        else:
+            date_inscription = None
+
+        # ✅ Liste de cours (SelectMultipleField)
+        cours_ids = form.coursId.data or []
+
+        # ✅ Catégorie d'âge (peut être une liste ou une simple valeur)
+        categorie_age = (
+            ','.join(form.categorie_age.data) if isinstance(form.categorie_age.data, list)
+            else form.categorie_age.data or None
+        )
 
         # Construction du payload pour l'API backend Node.js
         payload = {
@@ -469,6 +540,20 @@ def supprimer_adherent(adherent_id):
 
     return redirect(url_for('adherents.adherents'))  # Redirection vers la liste des cours
 
+
+@bp.route('/supprimer_fichier/<int:file_id>', methods=['GET'])
+def supprimer_fichier(file_id):
+    try:
+        response = requests.delete(
+            f'{API_BASE_URL}/api/fichiers/delete_file/{file_id}',
+            timeout=5
+        )
+        response.raise_for_status()
+        flash('fichier supprimé avec succès !', 'success')
+    except requests.RequestException as e:
+        flash(f'Erreur lors de la suppression du fichier : {e}', 'danger')
+
+    return redirect(url_for('adherents.adherents'))  # Redirection vers la liste des cours
 
 
 

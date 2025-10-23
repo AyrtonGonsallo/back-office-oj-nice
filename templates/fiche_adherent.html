@@ -42,15 +42,17 @@
                 {% endif %}
              </div>
             <div class="col-4">
+                {% if adherent.qrcode %}
                 <img src="data:image/png;base64,{{ adherent.qrcode }}" width="200px" alt="QR Code de {{ adherent.nom }}">
-
+                {% endif %}
              </div>
 
         </div>
 
 
         {% if appels %}
-          <table class="table table-bordered table-hover mt-5">
+            <h3 class="mt-5">Présences</h3>
+          <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     {% set col_labels2 = {
@@ -108,6 +110,50 @@
                 {% endfor %}
               </ul>
             </nav>
+
+    {% endif %}
+
+
+
+     {% if adherent.Fichiers %}
+         <h3 class="mt-5">Fichiers</h3>
+          <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    {% set col_labels3 = {
+                        'type': 'Type',
+                        'date': 'Date',
+                    } %}
+
+                        {% for col in [ 'date','type'] %}
+                        <th>
+                                {{ col_labels3[col] |capitalize }}
+
+                        </th>
+                    {% endfor %}
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in adherent.Fichiers %}
+                    <tr>
+
+                        <td>{{ f.date_de_creation[8:10] }}/{{ f.date_de_creation[5:7] }}/{{ f.date_de_creation[0:4] }}</td>
+
+                        <td>{{ f.type }}</td>
+
+                        <td>
+                           <a href="{{ url_for('adherents.supprimer_fichier', file_id=f.id) }}" class="btn btn-link">Supprimer</a>
+                            <a href="/static/cartes/{{ f.nom }}" target="_blank" class="btn btn-link">Télécharger</a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+
+
 
     {% endif %}
 

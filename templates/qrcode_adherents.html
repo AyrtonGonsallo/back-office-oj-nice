@@ -10,14 +10,23 @@
          <div style="border-bottom: black 3px solid; margin-bottom: 50px;">
               <div style="display:flex;justify-content: space-between;">
                 <div class="text-left">
-                  <h1>Generation du qrcode</h1>
+                  <h1>Génération du qrcode</h1>
                 </div>
 
                   <!-- Formulaire invisible pour soumettre les IDs -->
                 <form id="qr-form" method="POST" action="{{ url_for('qrcode.generation_qrcode') }}">
                   <input type="hidden" name="ids" id="selected-ids">
+                    <input type="hidden" name="goal" value="generation_qrcode">
                   <div style="align-items: center;display: flex;justify-content: center; margin-top: 10px;">
                     <button type="submit" class="btn btn-dark">Générer le QR code</button>
+                  </div>
+                </form>
+
+                  <form id="qr-form2" method="POST" action="{{ url_for('qrcode.generation_qrcode') }}">
+                  <input type="hidden" name="ids" id="selected-ids2">
+                      <input type="hidden" name="goal" value="generation_carte">
+                  <div style="align-items: center;display: flex;justify-content: center; margin-top: 10px;">
+                    <button type="submit" class="btn btn-dark">Générer les cartes</button>
                   </div>
                 </form>
 

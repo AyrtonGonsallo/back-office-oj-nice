@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired
 class FormEditUser(FlaskForm):
     nom = StringField('nom', validators=[DataRequired()])
     prenom = StringField('prenom', validators=[DataRequired()])
-    email = EmailField('email', validators=[DataRequired()])
+    email = EmailField('email', )
     dojoId = SelectField('dojo', choices=[], coerce=int, validators=[])
     role = SelectField('Role',choices=[ ] ,validators=[DataRequired()])
     submit = SubmitField('Modifier')

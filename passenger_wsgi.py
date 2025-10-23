@@ -8,9 +8,9 @@ from forms.form_add_user import FormAddUser
 from forms.form_edit_user import FormEditUser
 from forms.form_recuperation import FormRecuperation
 from dotenv import load_dotenv
+from routes import auth_routes, gestion_des_comptes_routes, dojos_routes, cours_routes, professeurs_routes, \
+    adherents_routes, appel_routes, qrcode_routes, presences_routes, historique_emails_routes, parametres_routes
 
-from routes import auth_routes, gestion_des_comptes_routes, dojos_routes, cours_routes, appel_routes, \
-    professeurs_routes, adherents_routes
 
 sys.path.insert(0, os.path.dirname(__file__))
 load_dotenv()
@@ -29,11 +29,17 @@ bootstrap = Bootstrap5(app)
 app.register_blueprint(auth_routes.bp)
 app.register_blueprint(gestion_des_comptes_routes.bp)
 app.register_blueprint(appel_routes.bp)
-
+app.register_blueprint(qrcode_routes.bp)
 app.register_blueprint(dojos_routes.bp)
 app.register_blueprint(cours_routes.bp)
+app.register_blueprint(parametres_routes.bp)
+app.register_blueprint(presences_routes.bp)
+app.register_blueprint(historique_emails_routes.bp)
 app.register_blueprint(professeurs_routes.bp)
 app.register_blueprint(adherents_routes.bp)
+
+
+
 
 
 @app.route('/tableau_de_bord', methods=['GET', 'POST'])
@@ -41,7 +47,42 @@ def tableau_de_bord():
     user = session.get('user')
     if not user:
         return redirect(url_for('auth.login'))
-    return render_template('tableau_de_bord.html', user=user)
+    response = requests.get(f'{API_BASE_URL}/api/statistiques/get_absences_consecutives')
+    response.raise_for_status()
+    appels = response.json()
+    appels_consecutifs_sorted = sorted(
+        appels,
+        key=lambda x: x['adherent']['nom'].lower() if x.get('adherent') else ""
+    )
+    response = requests.get(f'{API_BASE_URL}/api/statistiques/presence_semaine_travail')
+    response.raise_for_status()
+    presence_semaine_travail = response.json() or {}
+
+    # Valeurs par défaut si null ou absentes
+    presences_total = presence_semaine_travail.get("presencesTotal") or 0
+    judokas_total = presence_semaine_travail.get("judokasDistinctsTotal") or 0
+
+    if judokas_total > 0:
+        presence_semaine_travail["presences_par_judokas"] = round(
+            presences_total / judokas_total, 1
+        )
+    else:
+        presence_semaine_travail["presences_par_judokas"] = 0
+
+    # Deuxième appel API
+    response = requests.get(f"{API_BASE_URL}/api/statistiques/presence_par_dojo")
+    response.raise_for_status()
+    presence_par_dojo = response.json() or []
+
+    # Trier en gérant les valeurs nulles
+    presence_par_dojo_sorted = sorted(
+        presence_par_dojo,
+        key=lambda x: (x.get("dojoName") or "").lower()
+    )
+
+    return render_template('tableau_de_bord.html', user=user, appels_consecutifs=appels_consecutifs_sorted,
+                           presence_par_dojo=presence_par_dojo_sorted,
+                           presence_semaine_travail=presence_semaine_travail)
 
 
 @app.route('/adherents', methods=['GET', 'POST'])
@@ -52,13 +93,6 @@ def adherents():
     return render_template('adherents.html', user=user)
 
 
-
-@app.route('/parametres', methods=['GET', 'POST'])
-def parametres():
-    user = session.get('user')
-    if not user:
-        return redirect(url_for('login'))
-    return render_template('parametres.html', user=user)
 
 
 application = app
